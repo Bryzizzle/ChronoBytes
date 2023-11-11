@@ -8,4 +8,8 @@ def index():
     return "<p>Hello, World!</p>"
 
 
+@app.route("/process/<username>/")
+def process():
+    pass
+
 
