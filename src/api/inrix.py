@@ -22,11 +22,10 @@ class InrixAPI:
             "hashToken": self.hash_token
         }, use_auth=False).json()["result"]["token"]
 
-    def get_drivetime_polygons(self, center=None, range_type=None, duration=None, datetime=None, criteria=None):
-        param = {}
-
-        if center is not None:
-            param["center"] = center
+    def get_drivetime_polygons(self, lat, long, range_type=None, duration=None, datetime=None, criteria=None):
+        param = {
+            "center": f"{lat}|{long}"
+        }
 
         if range_type is not None:
             param["rangeType"] = range_type

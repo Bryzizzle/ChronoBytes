@@ -17,6 +17,8 @@ class YelpBusiness:
     disp_phone: str
     distance: float
 
+    categories: list[str]
+
     def __init__(self, raw_data: dict):
         self.id = raw_data["id"]
         self.alias = raw_data["alias"]
@@ -29,13 +31,24 @@ class YelpBusiness:
         self.coord_lat = raw_data["coordinates"]["latitude"]
         self.coord_long = raw_data["coordinates"]["longitude"]
 
-        self.price = len(raw_data["price"])
+        try:
+            self.price = len(raw_data["price"])
+        except KeyError:
+            # Do an average priced restaurant if no rating is given
+            self.price = 2
+
         self.disp_location = raw_data["location"]["display_address"]
         self.disp_phone = raw_data["display_phone"]
         self.distance = raw_data["distance"]
 
+        categories = raw_data.get("categories", {})
+        self.categories = [category["title"] for category in categories]
+
     def get_location_point(self):
         return self.coord_lat, self.coord_long
+
+    def generate_llm_string(self):
+        return f" - {self.id} | {self.name} | {self.rating}/5 | {', '.join(self.categories)}"
 
 
 class YelpAPI:
@@ -101,4 +114,3 @@ class YelpAPI:
             ret_list.append(YelpBusiness(business))
 
         return ret_list
-
