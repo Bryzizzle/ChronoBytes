@@ -1,8 +1,9 @@
 from openai import OpenAI
+from os import getenv
 
 client = OpenAI(
     # defaults to os.environ.get("OPENAI_API_KEY")
-    api_key= os.getenv("OPENAI_KEY"),
+    api_key= getenv("OPENAI_KEY"),
 )
 
 chat_completion = client.chat.completions.create(
