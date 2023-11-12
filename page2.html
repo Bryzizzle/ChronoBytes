@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style2.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        /* Additional styles for the toggle button */
+        button {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .form-container {
+            display: none; /* Initially hide the form */
+        }
+    </style>
+</head>
+<body>
+
+    <section class="container">
+        <h1>
+            <span class="title">Welcome to</span>
+            <span class="title">ChronoByte</span>
+            <span class="title"> </span>
+        </h1>
+        
+        <div class="button" onclick="startChronoByte()">Start</div>
+    </section>
+
+    <section class="form-container">
+        <header>
+            <h1>Chrono Bytes</h1>
+        </header>
+
+        <main>
+            <form id="foodForm" action="/registration" method="POST">
+                <label for="food">What do you want to eat?</label>
+                <textarea name="food" placeholder="E.g., Pizza, Sushi, etc." required></textarea>
+
+                <label for="time">How long do you want to drive? (in minutes):</label>
+                <input type="number" name="time" placeholder="Enter duration" required>
+
+                <label for="currentDate">Current Date:</label>
+                <input type="text" id="currentDate" name="currentDate" placeholder="Select date" required>
+
+                <label for="currentTime">Current Time (HH:MM):</label>
+                <input type="text" id="currentTime" name="currentTime" placeholder="Enter time" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required>
+
+                <input type="submit" value="Submit">
+            </form>
+
+            <img src="chef.jpeg" alt="A delicious falafel">
+        </main>
+
+        <button onclick="toggleStyles()">Toggle Styles</button>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr("#currentDate", {
+            dateFormat: "Y-m-d",
+            minDate: "today",
+        });
+
+        flatpickr("#currentTime", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+        });
+
+        // Adding JavaScript for form submission
+        document.getElementById('foodForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the form from actually submitting
+            alert('Form submitted!'); // You can replace this with your desired functionality
+        });
+
+        // Adding JavaScript for style toggle
+        function toggleStyles() {
+            const styleLinks = document.querySelectorAll('link[href^="style"]');
+            styleLinks.forEach(link => {
+                link.href = (link.href.includes('style.css')) ? 'style2.css' : 'style.css';
+            });
+        }
+
+        // Adding JavaScript to show the form when "Start" is clicked
+        function startChronoByte() {
+            const container = document.querySelector('.container');
+            const formContainer = document.querySelector('.form-container');
+
+            container.style.display = 'none';
+            formContainer.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
