@@ -3,9 +3,9 @@ from os import getenv
 from api.inrix import InrixAPI
 from api.yelp import YelpAPI
 
-INRIX_APPID = os.getenv('INRIX_APPID')
-INRIX_TOKEN = os.getenv('INRIX_TOKEN')
-YELP_APIKEY = os.getenv('YELP_APIKEY')
+INRIX_APPID = getenv('INRIX_APPID')
+INRIX_TOKEN = getenv('INRIX_TOKEN')
+YELP_APIKEY = getenv('YELP_APIKEY')
 print(INRIX_APPID, INRIX_TOKEN, YELP_APIKEY)
 
 
