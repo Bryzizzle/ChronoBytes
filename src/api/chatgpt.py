@@ -41,10 +41,7 @@ def make_yelp_query(prompt):
             cleaned += c
 
     cleaned += "}"
-    print(cleaned)
-    cleaned = cleaned.replace("\n", "")
-    print(cleaned)
-    # {\n  "term": "chicken teriyaki",\n  "categories": "null",\n  "price": "1,2"\n}
+    cleaned = cleaned.replace("\\n", "")
     yelp_query = json.loads(cleaned)
 
     for key, value in yelp_query.items():
