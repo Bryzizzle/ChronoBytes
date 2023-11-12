@@ -69,8 +69,8 @@ def in_polygon(places_list, polygon_coordinates):
     #parse places list
     for place in places_list:
         # check if the place is in polygon
-        lat = 37.770315
-        long = -122.446527
+        lat = place.coord_lat
+        long = place.coord_long
 
         point = Point(lat, long)
         poly = Polygon(polygon_coordinates)
@@ -81,8 +81,6 @@ def in_polygon(places_list, polygon_coordinates):
     return ret
 
     
-        
-
     # point in polygon
     # https://kodu.ut.ee/~kmoch/geopython2021/L3/point-in-polygon.html
 
