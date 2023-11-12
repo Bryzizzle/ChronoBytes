@@ -24,15 +24,46 @@
         </header>
 
         <main>
+            
             <form id="requestForm">
-                <label for="food">What do you want to eat?</label>
-                <textarea name="food" placeholder="E.g., Pizza, Sushi, etc." required></textarea>
+                <label for="query">Query?</label>
+                <textarea name="query" id="query" placeholder="I want to eat cheap new york style pizza" required></textarea>
 
-                <label for="time">How long do you want to drive? (in minutes):</label>
-                <input type="number" name="time" placeholder="Enter duration" required>
+                <label for="time">Travel Time? (in minutes):</label>
+                <input type="number" name="time" placeholder="30" required>
 
                 <label for="currentDate">Current Date:</label>
                 <input type="text" id="currentDate" name="currentDate" placeholder="Select date" required>
+
+                <script>
+                    function getLocation() {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(showPosition);
+                        } else {
+                            document.getElementById('location').innerHTML = 'Geolocation is not supported by this browser.';
+                        }
+                    }
+            
+                    function showPosition(position) {
+                        var latitude = position.coords.latitude;
+                        var longitude = position.coords.longitude;
+            
+                        // Use AJAX to send the coordinates to the Flask server
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '/get_location', true);
+                        xhr.setRequestHeader('Content-Type', 'application/json');
+                        xhr.onreadystatechange = function () {
+                            if (xhr.readyState == 4 && xhr.status == 200) {
+                                // Update the HTML with the server's response
+                                document.getElementById('location').innerHTML = xhr.responseText;
+                            }
+                        };
+                        xhr.send(JSON.stringify({ 'latitude': latitude, 'longitude': longitude }));
+                    }
+            
+                    // Call the getLocation function when the page loads
+                    getLocation();
+                </script>
 
                 <label for="currentTime">Current Time (HH:MM):</label>
                 <input type="text" id="currentTime" name="currentTime" placeholder="Enter time" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required>
@@ -58,13 +89,13 @@
         });
 
         // Adding JavaScript for form submission
-        document.getElementById('requestForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevent the form from actually submitting
+        // document.getElementById('requestForm').addEventListener('submit', function (event) {
+        //     event.preventDefault(); // Prevent the form from actually submitting
 
-            // TODO: Generate the path to the api endpoint and call it
-            // TODO: Use the return value to show the output
+        //     // TODO: Generate the path to the api endpoint and call it
+        //     // TODO: Use the return value to show the output
 
-        });
+        // });
 
         // Adding JavaScript to show the form when "Start" is clicked
         function startChronoByte() {

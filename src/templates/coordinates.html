@@ -1,0 +1,42 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Geolocation Example</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Get Your Current Location</h1>
+    <p id="location"></p>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                document.getElementById('location').innerHTML = 'Geolocation is not supported by this browser.';
+            }
+        }
+
+        function showPosition(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Use AJAX to send the coordinates to the Flask server
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/get_location', true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    // Update the HTML with the server's response
+                    document.getElementById('location').innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send(JSON.stringify({ 'latitude': latitude, 'longitude': longitude }));
+        }
+
+        // Call the getLocation function when the page loads
+        getLocation();
+    </script>
+</body>
+</html>

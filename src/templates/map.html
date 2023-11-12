@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Map Example</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Display Route with Pin Markers on Map</h1>
+    <div id="map" style="height: 1400px;"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([37.7749, -122.4194], 10);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Fetch route coordinates from Flask server
+        fetch('/get_route')
+            .then(response => response.json())
+            .then(data => {
+                var routeCoordinates = data.route;
+
+                // Add route polyline
+                // var route = L.polyline(routeCoordinates, { color: 'red' }).addTo(map);
+                var route = L.polyline(routeCoordinates, { color: 'red', weight: 10 }).addTo(map);
+
+                // Add pin markers
+                routeCoordinates.forEach(coord => {
+                    L.marker([coord.lat, coord.lng]).addTo(map);
+                });
+
+                // Fit the map to the bounds of the route
+                map.fitBounds(route.getBounds());
+            })
+            .catch(error => console.error('Error:', error));
+    </script>
+</body>
+</html>

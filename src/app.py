@@ -16,6 +16,8 @@ yelp = YelpAPI(YELP_APIKEY)
 
 app = Flask(__name__)
 
+center = []
+
 
 @app.route("/")
 def index():
@@ -52,3 +54,47 @@ def process(request: str, start_time: int, duration: int, loc_lat: float, loc_lo
 
     return ret
 
+
+
+@app.route('/submit', methods=['POST'])
+def submit():
+    # Handle form submission here
+    query = request.form.get('query')
+    duration = request.form.get('duration')
+    print(query, duration)
+    list_of_courses = [query, duration, center[0], center[1]]
+    return render_template("result.html", courses=list_of_courses) 
+
+# link submit to process to result
+
+@app.route('/coord')
+def coord():
+    return render_template('coordinates.html')
+
+@app.route('/get_location', methods=['POST'])
+def get_location():
+    data = request.get_json()
+    latitude = data.get('latitude')
+    longitude = data.get('longitude')
+    center.append(latitude)
+    center.append(longitude)
+
+    # Here, you can process the latitude and longitude as needed
+    location_info = f'Latitude {latitude} Longitude {longitude}'
+
+    return location_info
+
+@app.route('/map')
+def map():
+    return render_template('map.html')
+
+@app.route('/get_route')
+def get_route():
+    # Sample route coordinates
+    route_coordinates = [
+        {'lat': 37.7749, 'lng': -122.4194},
+        {'lat': 34.0522, 'lng': -118.2437},
+        # Add more coordinates as needed
+    ]
+
+    return jsonify({'route': route_coordinates})
