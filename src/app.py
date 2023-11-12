@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from os import getenv
 from api.inrix import InrixAPI
 from api.yelp import YelpAPI
+from api.chatgpt import make_yelp_query
 
 from utils import polygons
 
@@ -32,13 +33,17 @@ def process(request: str, start_time: int, duration: int, loc_lat: float, loc_lo
     dt_radius = polygons.furthest_distance((loc_lat, loc_long), dt_polygons_coords)
     dt_radius = int(min(40000, dt_radius * 1000))
 
+    # Parse the user query to yelp-readable parameters
+    llm_term, llm_categories, llm_price = make_yelp_query(request)
+
     # Query the Yelp API for restaurants within the allocated radius
-    yelp_response = yelp.parsed_business_search(loc_lat, loc_long, dt_radius, limit=50)
+    yelp_response = yelp.parsed_business_search(loc_lat, loc_long, dt_radius, llm_term, llm_categories, llm_price,
+                                                limit=50)
 
     # Cull all the restaurants outside the initial polygon
     yelp_culled = polygons.in_polygon(yelp_response, dt_polygons_coords)
 
-    # print(yelp_culled)
+    print(yelp_culled)
 
     ret = ""
     for business in yelp_culled:
