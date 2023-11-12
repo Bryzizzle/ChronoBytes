@@ -37,7 +37,7 @@ class YelpBusiness:
             # Do an average priced restaurant if no rating is given
             self.price = 2
 
-        self.disp_location = raw_data["location"]["display_address"]
+        self.disp_location = " ".join(raw_data["location"]["display_address"])
         self.disp_phone = raw_data["display_phone"]
         self.distance = raw_data["distance"]
 

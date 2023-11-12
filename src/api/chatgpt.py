@@ -42,7 +42,24 @@ def make_yelp_query(input_prompt: str) -> tuple:
 
     cleaned += "}"
     cleaned = cleaned.replace("\\n", "")
-    yelp_query = json.loads(cleaned)
+
+    try:
+        yelp_query = json.loads(cleaned)
+    except json.JSONDecodeError:
+        return None, None, None
+
+    # for key, value in yelp_query.items():
+    #     if value == "null":
+    #         yelp_query[key] = None
+
+    # Ensure that ChatGPT returns a comma-seperated list of integers and not dollar signs
+    out_price = None
+    if re.match("^[1-4]+(,\\s*[1-4]+)*$", yelp_query["price"]):
+        out_price = yelp_query["price"]
+
+    out_term = None
+    if yelp_query.get("term", "null") != "null":
+        out_term = yelp_query["term"]
 
     out_categories = None
     if yelp_query.get("categories", "null") != "null":

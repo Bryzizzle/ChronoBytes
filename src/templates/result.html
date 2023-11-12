@@ -4,13 +4,20 @@
     <head> 
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
         <title>For Example</title> 
     </head> 
     <body> 
-        <h2> List of Places </h2> 
-        {% for course in courses%} 
-          <h4> {{course}} </h4> 
+        <h2> List of Results </h2>
+        {% for business in businesses%}
+            <div class="business_wrapper">
+                <h3><a href="{{ business.url }}">{{ business.name }}</a></h3>
+                <p>{{ business.rating }} / 5  ({{ business.review_count }} Reviews)</p>
+                <p>{{ business.disp_phone }}</p>
+                <p>{{ business.disp_location }}</p>
+
+            </div>
+
         {% endfor %} 
     </body> 
 </html>

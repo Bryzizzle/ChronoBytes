@@ -87,3 +87,14 @@ img {
   border-radius: 8px;
   margin-top: 20px;
 }
+
+div.business_wrapper {
+  border: 2px solid #555;
+  margin: 10px 30% 10px 10px;
+  padding-left: 10px;
+  border-radius: 5px;
+}
+
+#mainFormWrapper {
+  padding: 0 70px;
+}

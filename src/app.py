@@ -4,6 +4,8 @@ from api.inrix import InrixAPI
 from api.yelp import YelpAPI
 from api.chatgpt import make_yelp_query
 
+from xml.etree.ElementTree import ParseError
+
 from utils import polygons
 
 INRIX_APPID = getenv('INRIX_APPID')
@@ -29,7 +31,11 @@ def index():
 def process(request: str, start_time: int, duration: int, loc_lat: float, loc_long: float):
     # Retrieve and process the drive time polygons from the INRIX API
     dt_polygons_xml = inrix.get_drivetime_polygons(loc_lat, loc_long, "D", duration).text
-    dt_polygons_coords = polygons.get_polygon_coordinates(dt_polygons_xml)
+
+    try:
+        dt_polygons_coords = polygons.get_polygon_coordinates(dt_polygons_xml)
+    except ParseError:
+        return "Unauthorized Location Request (INRIX API)"
 
     # Get the furthest radius from the polygons (in km) and cap it at Yelp's 40 KM limit
     dt_radius = polygons.furthest_distance((loc_lat, loc_long), dt_polygons_coords)
@@ -45,25 +51,18 @@ def process(request: str, start_time: int, duration: int, loc_lat: float, loc_lo
     # Cull all the restaurants outside the initial polygon
     yelp_culled = polygons.in_polygon(yelp_response, dt_polygons_coords)
 
-    print(yelp_culled)
-
-    ret = ""
-    for business in yelp_culled:
-        ret += business.generate_llm_string()
-        ret += "<br/>"
-
-    return ret
+    return render_template("result.html", businesses=yelp_culled)
 
 
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    # Handle form submission here
-    query = request.form.get('query')
-    duration = request.form.get('duration')
-    print(query, duration)
-    list_of_courses = [query, duration, center[0], center[1]]
-    return render_template("result.html", courses=list_of_courses) 
+# @app.route('/submit', methods=['POST'])
+# def submit():
+#     # Handle form submission here
+#     query = request.form.get('query')
+#     duration = request.form.get('duration')
+#     print(query, duration)
+#     list_of_courses = [query, duration, center[0], center[1]]
+#     return render_template("result.html", courses=list_of_courses)
 
 # link submit to process to result
 

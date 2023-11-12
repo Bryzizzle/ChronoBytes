@@ -1,5 +1,7 @@
 import requests
 
+from functools import cache
+
 
 class InrixAPI:
     api_url: str
@@ -22,6 +24,7 @@ class InrixAPI:
             "hashToken": self.hash_token
         }, use_auth=False).json()["result"]["token"]
 
+    @cache
     def get_drivetime_polygons(self, lat, long, range_type=None, duration=None, datetime=None, criteria=None):
         param = {
             "center": f"{lat}|{long}"

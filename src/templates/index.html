@@ -23,7 +23,7 @@
             <h1>Chrono Bytes</h1>
         </header>
 
-        <main>
+        <main id="mainFormWrapper">
             
             <form id="requestForm">
                 <label for="query">Query?</label>
@@ -35,48 +35,21 @@
                 <label for="currentDate">Current Date:</label>
                 <input type="text" id="currentDate" name="currentDate" placeholder="Select date" required>
 
-                <script>
-                    function getLocation() {
-                        if (navigator.geolocation) {
-                            navigator.geolocation.getCurrentPosition(showPosition);
-                        } else {
-                            document.getElementById('location').innerHTML = 'Geolocation is not supported by this browser.';
-                        }
-                    }
-            
-                    function showPosition(position) {
-                        var latitude = position.coords.latitude;
-                        var longitude = position.coords.longitude;
-            
-                        // Use AJAX to send the coordinates to the Flask server
-                        var xhr = new XMLHttpRequest();
-                        xhr.open('POST', '/get_location', true);
-                        xhr.setRequestHeader('Content-Type', 'application/json');
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState == 4 && xhr.status == 200) {
-                                // Update the HTML with the server's response
-                                document.getElementById('location').innerHTML = xhr.responseText;
-                            }
-                        };
-                        xhr.send(JSON.stringify({ 'latitude': latitude, 'longitude': longitude }));
-                    }
-            
-                    // Call the getLocation function when the page loads
-                    getLocation();
-                </script>
-
                 <label for="currentTime">Current Time (HH:MM):</label>
                 <input type="text" id="currentTime" name="currentTime" placeholder="Enter time" pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]" required>
 
                 <input type="submit" value="Submit">
             </form>
 
-            <img src="{{ url_for('static', filename='chef.jpeg') }}" alt="Decorative Image">
+{#            <img src="{{ url_for('static', filename='chef.jpeg') }}" alt="Decorative Image">#}
         </main>
     </section>
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
+        let loc_lat = 0;
+        let loc_long = 0;
+
         flatpickr("#currentDate", {
             dateFormat: "Y-m-d",
             minDate: "today",
@@ -88,14 +61,38 @@
             dateFormat: "H:i",
         });
 
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(setLocationGlobals);
+            } else {
+                document.getElementById('location').innerHTML = 'Geolocation is not supported by this browser.';
+            }
+        }
+
+        function setLocationGlobals(position){
+            loc_lat = position.coords.latitude;
+            loc_long = position.coords.longitude;
+        }
+
+
         // Adding JavaScript for form submission
-        // document.getElementById('requestForm').addEventListener('submit', function (event) {
-        //     event.preventDefault(); // Prevent the form from actually submitting
+        document.getElementById('requestForm').addEventListener('submit', function (event) {
+            event.preventDefault(); // Prevent the form from actually submitting
 
-        //     // TODO: Generate the path to the api endpoint and call it
-        //     // TODO: Use the return value to show the output
+            // Retrieve all the fields
+            const formData = new FormData(document.getElementById('requestForm'));
 
-        // });
+            const query = formData.get("query");
+            const duration = formData.get("time");
+            const curr_date = formData.get("currentDate");
+            const curr_time = formData.get("currentTime");
+
+            const curr_unix_time = parseInt((new Date(`${curr_date} ${curr_time}`).getTime() / 1000).toFixed(0))
+
+            // Generate the path string
+            const url = `/process/${query}/${curr_unix_time}/${duration}/${loc_lat}/${loc_long}`
+            window.location.href = url
+        });
 
         // Adding JavaScript to show the form when "Start" is clicked
         function startChronoByte() {
@@ -105,6 +102,8 @@
             container.style.display = 'none';
             formContainer.style.display = 'block';
         }
+
+        getLocation();
     </script>
 </body>
 </html>
