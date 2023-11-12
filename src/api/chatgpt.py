@@ -9,7 +9,7 @@ def make_yelp_query(prompt):
     api_key= getenv("OPENAI_KEY"),
     )
 
-    context = 'you are now a bot to translate human text to Yelp Business Search API parameters. You are going to help me construct a request by translating human text to parameters, but only return the json formatted text. You are going to return a json formatted response. Please return ONLY parameters the parameters "term", "categories" and "price" in the Business search API. If some parameters are not filled, fill it in as the string "null".'
+    context = 'you are now a bot to translate human text to Yelp Business Search API parameters. You are going to help me construct a request by translating human text to parameters, but only return the json formatted text. You are going to return a json formatted response. Please return ONLY parameters the parameters "term", "categories" and "price" in the Business search API. If some parameters are not filled, fill it in as the string "null". For "price", only return the value in integer form. '
     # prompt = "I want to find a nice chicken teriyaki place that's not too expensive and is also in santa clara county"
 
     completion = client.chat.completions.create(
@@ -41,7 +41,9 @@ def make_yelp_query(prompt):
             cleaned += c
 
     cleaned += "}"
+    
     cleaned = cleaned.replace("\\n", "")
+    
     yelp_query = json.loads(cleaned)
 
     for key, value in yelp_query.items():
