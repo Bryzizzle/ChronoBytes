@@ -13,12 +13,8 @@ def make_yelp_query(input_prompt: str) -> tuple:
         api_key=getenv("OPENAI_KEY"),
     )
 
-    context = 'you are now a bot to translate human text to Yelp Business Search API parameters. You are going to ' \
-              'help me construct a request by translating human text to parameters, but only return the json ' \
-              'formatted text. You are going to return a json formatted response. Please return ONLY parameters the ' \
-              'parameters "term", "categories" and "price" in the Business search API. If some parameters are not ' \
-              'filled, fill it in as the string "null". For "price", only return the values as a string of ' \
-              'comma-seperated list of integers.'
+    context = 'you are now a bot to translate human text to Yelp Business Search API parameters. You are going to help me construct a request by translating human text to parameters, but only return the json formatted text. You are going to return a json formatted response. Please return ONLY parameters the parameters "term", "categories" and "price" in the Business search API. If some parameters are not filled, fill it in as the string "null".'
+    # prompt = "I want to find a nice chicken teriyaki place that's not too expensive and is also in santa clara county"
 
     completion = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -46,24 +42,7 @@ def make_yelp_query(input_prompt: str) -> tuple:
 
     cleaned += "}"
     cleaned = cleaned.replace("\\n", "")
-
-    try:
-        yelp_query = json.loads(cleaned)
-    except json.JSONDecodeError:
-        return None, None, None
-
-    # for key, value in yelp_query.items():
-    #     if value == "null":
-    #         yelp_query[key] = None
-
-    # Ensure that ChatGPT returns a comma-seperated list of integers and not dollar signs
-    out_price = None
-    if re.match("^[1-4]+(,\\s*[1-4]+)*$", yelp_query["price"]):
-        out_price = yelp_query["price"]
-
-    out_term = None
-    if yelp_query.get("term", "null") != "null":
-        out_term = yelp_query["term"]
+    yelp_query = json.loads(cleaned)
 
     out_categories = None
     if yelp_query.get("categories", "null") != "null":
